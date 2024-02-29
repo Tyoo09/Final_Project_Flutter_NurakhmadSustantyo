@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:final_project_flutter_nurakhmadsustantyo/utils/enums/channel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,23 +21,27 @@ class ArticlesProvider with ChangeNotifier {
     String q = '',
   }) async {
     try {
-      List<ArticlesModels> appleArticles = <ArticlesModels>[];
+      List<ArticlesModels> articles = <ArticlesModels>[];
 
       var queryParams = {
         'apiKey': _apiKey,
         'country': country.countryCode,
-        'category': category,
-        'sources': sources,
+        'category': category.name,
+        'sources': sources.name,
         'q': q,
       };
 
       final url = Uri.http(_baseUrl, 'v2/top-headlines', queryParams);
       final response = await http.get(url);
 
-      final decodedData = response.body;
+      final decodedData = json.decode(response.body);
 
-      print(decodedData);
-      return appleArticles;
+      if (decodedData['status'] == 'ok') {
+        articles = (decodedData['articles'] as List)
+            .map((article) => ArticlesModels.fromJson(article))
+            .toList();
+      }
+      return articles;
       // final resp = await http.get(Uri.parse(
       //     'https://newsapi.org/v2/everything?q=apple&from=2024-02-19&to=2024-02-19&sortBy=popularity&apiKey=d9eb200c754f4d9dabc0f3b03ea29c44'));
 

@@ -1,6 +1,6 @@
-import 'package:final_project_flutter_nurakhmadsustantyo/models/article_models.dart';
-import 'package:final_project_flutter_nurakhmadsustantyo/providers/article_providers.dart';
-import 'package:final_project_flutter_nurakhmadsustantyo/widgets/home_widget.dart';
+import '../models/article_models.dart';
+import '../providers/article_providers.dart';
+import '../widgets/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +21,9 @@ class _HomeScreen extends State<HomeScreen> {
       appBar: AppBar(
         title: !isSearching
             ? Image.asset(
-                '../images/logo.png',
-                fit: BoxFit.contain,
+                'lib/images/logo.png',
+                height: 110,
+                width: 110,
               )
             : TextField(
                 style: TextStyle(color: Colors.black),
@@ -45,6 +46,16 @@ class _HomeScreen extends State<HomeScreen> {
             },
           ),
         ],
+        leading: isSearching
+            ? IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    isSearching = false;
+                  });
+                },
+              )
+            : null,
       ),
       drawer: Drawer(
         child: ListView(
@@ -56,7 +67,7 @@ class _HomeScreen extends State<HomeScreen> {
           ],
         ),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<ArticlesModels>>(
         future: Provider.of<ArticlesProvider>(context).getArticlesData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,6 +90,7 @@ class _HomeScreen extends State<HomeScreen> {
                   urlToImage: articles[index].urlToImage!,
                   publishedAt: articles[index].publishedAt!,
                   content: articles[index].content!,
+                  articles: articles,
                 );
               },
             );
